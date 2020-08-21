@@ -1,12 +1,11 @@
-class Greeter{
-    constructor(public name:string){}
-    greet(){
-        return `hello world, ${this.name}!!`;
-    }
-    hugeGreet(){
-        return `HELLO WORLD~~!, ${this.name}!!!`
-    }
-};
+import * as express from 'express'
+import {IWOPController} from './apps/iwop/controller'
 
-const greeter= new Greeter('vincent');
-console.log(greeter.greet());
+const app: express.Application = express();
+const port: number = 3000;
+
+app.use('/iwop', IWOPController);
+
+app.listen(port, () => {
+  console.log(`Listening at http://localhost:${port}/`);
+});

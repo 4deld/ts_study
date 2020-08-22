@@ -1,11 +1,44 @@
-import * as express from 'express'
-import {IWOPController} from './apps/iwop/controller'
+import * as mongoose from 'mongoose';
 
-const app: express.Application = express();
-const port: number = 3000;
+import { IWOP, IWOPModel } from './domain/iwop'
+import { DB } from './domain/db';
 
-app.use('/iwop', IWOPController);
 
-app.listen(port, () => {
-  console.log(`Listening at http://localhost:${port}/`);
-});
+let uri = 'mongodb://localhost/club';
+const connection: mongoose.MongooseThenable = mongoose.connect(uri);
+
+const db = new DB();
+
+let park = <IWOP>{name :'park',grade:3,isMale:true}
+
+connection.then(()=>{
+  return db.create(park)
+})
+.then((raw:IWOP) => {
+    db.read({name: raw.name}).then((iwops) => { 
+        console.log('Created');
+        console.log(iwops);
+    });
+})
+.then(()=>{
+  park.grade=0
+  return db.update(park)
+})
+.then(()=>{
+  db.read({name:'park'}).then((iwops)=>{
+    console.log('Updated')
+    console.log(iwops)
+  })
+})
+.then(()=>{
+  return db.delete(park)
+})
+.then(()=>{
+  db.read({name:'park'}).then((iwops)=>{
+    console.log('Deleted')
+    console.log(iwops)
+  })
+})
+.then(()=>{
+  mongoose.connection.close()
+})

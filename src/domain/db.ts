@@ -1,26 +1,24 @@
-import {IWOP} from './models'
+import * as mongoose from 'mongoose'
 
-const iwops:IWOP[] = [
-    new IWOP('a', 2, true),
-    new IWOP('b', 2, false),
-    new IWOP('c', 1, true),
-    new IWOP('d', 1, true),
-    new IWOP('e', 1, true),
-    new IWOP('f', 1, true),
-    new IWOP('g', 1, false)
-]
+import {IWOP, IWOPModel } from './iwop'
 
-class DB{
+export class DB{
     constructor(){}
 
-    public query = (name?: string) : IWOP[] =>{
-        if(!name){
-            return iwops
-        }
-        return iwops.filter(
-            (iwop,i):boolean => {return iwop.name === name}, iwops
-        )
+    create(iwop: IWOP): Promise<IWOP>{
+        let p = new IWOPModel(iwop)
+        return p.save()
+    }
+
+    read(query: any):mongoose.DocumentQuery<IWOP[], IWOP>{
+        return IWOPModel.find(query)
+    }
+
+    update(iwop: IWOP):mongoose.Query<number>{
+        return IWOPModel.update({name:iwop.name},{...iwop})
+    }  
+    
+    delete(iwop: IWOP):mongoose.Query<void>{
+        return IWOPModel.remove({name: iwop.name})
     }
 }
-
-export const db = new DB()
